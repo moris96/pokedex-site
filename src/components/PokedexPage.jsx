@@ -1,12 +1,16 @@
+// PokedexPage.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Search from './Search';
 
 const PokedexPage = () => {
   const [pokeData, setPokeData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon?limit=10');
   const [next, setNext] = useState();
-  const [prev, setPrev] = useState();
+  const [prev, setPrev] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredPokeData, setFilteredPokeData] = useState([]);
 
   const getPokemon = async () => {
     setLoading(true);
@@ -49,16 +53,28 @@ const PokedexPage = () => {
     getPokemon();
   }, [url]);
 
+  useEffect(() => {
+    // Filter the Pokemon data based on the search term
+    const filteredPokemon = pokeData.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPokeData(filteredPokemon);
+  }, [searchTerm, pokeData]);
+
   return (
     <div className="container mt-4">
       <h1 className="text-center mb-4">Pokedex</h1>
+
+      {/* Use the SearchBar component */}
+      <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+
       {loading ? (
         <p>Loading...</p>
       ) : (
         <div>
           <div className="row">
-            {pokeData.map((pokemon) => (
-              <div key={pokemon.id} className="col-md-3 mb-4">
+            {filteredPokeData.map((pokemon) => (
+              <div key={pokemon.id} className="col-md-3 mb-3">
                 <div className="card">
                   <img
                     src={pokemon.sprites.front_default}
