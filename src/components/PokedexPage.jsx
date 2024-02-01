@@ -48,13 +48,30 @@ const PokedexPage = () => {
     setUrl(prev);
   };
 
-  const handleCardClick = (id) => {
-    setPokeData((prevData) =>
-      prevData.map((pokemon) =>
-        pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked } : pokemon
-      )
-    );
+  const handleCardClick = async (id) => {
+    // If the detailed information is not already loaded, fetch it
+    if (!pokeData.find(pokemon => pokemon.id === id).details) {
+      try {
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}/`);
+        const details = response.data;
+        setPokeData((prevData) =>
+          prevData.map((pokemon) =>
+            pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked, details } : pokemon
+          )
+        );
+      } catch (error) {
+        console.error('Error fetching Pokemon details:', error);
+      }
+    } else {
+      // If the detailed information is already loaded, just toggle the click state
+      setPokeData((prevData) =>
+        prevData.map((pokemon) =>
+          pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked } : pokemon
+        )
+      );
+    }
   };
+  
 
   useEffect(() => {
     getPokemon();
@@ -68,11 +85,13 @@ const PokedexPage = () => {
     setFilteredPokeData(filteredPokemon);
   }, [searchTerm, pokeData]);
 
+
+
   return (
     <div className="container mt-4">
       <h1 className="text-center mb-4">Pokedex</h1>
 
-      {/* Use the SearchBar component */}
+      {/* search component */}
       <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 
       {loading ? (
@@ -83,15 +102,16 @@ const PokedexPage = () => {
             {filteredPokeData.map((pokemon) => (
               <div key={pokemon.id} className="col-md-3 mb-3">
                 <div className="card" onClick={() => handleCardClick(pokemon.id)}>
-                  <img
-                    src={pokemon.sprites.front_default}
-                    alt={pokemon.name}
-                    className="card-img-top"
-                  />
-                  {pokemon.isClicked && (
+                  {pokemon.isClicked ? (
                     <div className="card-body">
+                      <img
+                        src={pokemon.sprites.front_default}
+                        alt={pokemon.name}
+                        className="card-img-top"
+                      />
                       <h5 className="card-title">{pokemon.name}</h5>
                       <p className="card-text">
+                        <strong>ID:</strong> {pokemon.id}<br />
                         <strong>Height:</strong> {pokemon.height / 10}m<br />
                         <strong>Weight:</strong> {pokemon.weight / 10}kg<br />
                         <strong>Type:</strong>{' '}
@@ -105,10 +125,24 @@ const PokedexPage = () => {
                           </li>
                         ))}
                         <li className="list-group-item">
-                          <strong>total:</strong>{' '}
+                          <strong>Total:</strong>{' '}
                           {pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}
                         </li>
                       </ul>
+                    </div>
+                  ) : (
+                    <div>
+                      <img
+                        src={pokemon.sprites.front_default}
+                        alt={pokemon.name}
+                        className="card-img-top"
+                      />
+                      <div className="card-body">
+                        <h5 className="card-title">{pokemon.name}</h5>
+                        <p className="card-text">
+                          <strong>ID:</strong> {pokemon.id}
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
