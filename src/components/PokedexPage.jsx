@@ -10,6 +10,7 @@ const PokedexPage = () => {
   const [prev, setPrev] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredPokeData, setFilteredPokeData] = useState([]);
+  const [selectedType, setSelectedType] = useState(null);
 
   const getPokemon = async () => {
     setLoading(true);
@@ -71,21 +72,23 @@ const PokedexPage = () => {
       );
     }
   };
-  
+
+  const handleTypeFilter = (type) => {
+    setSelectedType(type);
+  };
 
   useEffect(() => {
     getPokemon();
   }, [url]);
 
   useEffect(() => {
-    // Filter the entire list of Pokemon based on the search term
+    // Filter the entire list of Pokemon based on the search term and selected type
     const filteredPokemon = pokeData.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (!selectedType || pokemon.types.some((type) => type.type.name === selectedType))
     );
     setFilteredPokeData(filteredPokemon);
-  }, [searchTerm, pokeData]);
-
-
+  }, [searchTerm, pokeData, selectedType]);
 
   return (
     <div className="container mt-4">
@@ -103,6 +106,14 @@ const PokedexPage = () => {
             <div className="mt-4">
               {prev && <button onClick={handlePrev}>Previous</button>}
               {next && <button onClick={handleNext}>Next</button>}
+            </div>
+            {/* Type filter buttons */}
+            <div className="mt-4">
+              <button onClick={() => handleTypeFilter(null)}>All</button>
+              <button onClick={() => handleTypeFilter('fire')}>Fire</button>
+              <button onClick={() => handleTypeFilter('water')}>Water</button>
+              <button onClick={() => handleTypeFilter('grass')}>Grass</button>
+              {/* Add more buttons for other types as needed */}
             </div>
             {filteredPokeData.map((pokemon) => (
               <div key={pokemon.id} className="col-md-3 mb-3">
@@ -154,7 +165,7 @@ const PokedexPage = () => {
               </div>
             ))}
           </div>
-          {/* next/prev buttons at bottom */}
+          {/* next/prev buttons at the bottom */}
           <div className="mt-4">
             {prev && <button onClick={handlePrev}>Previous</button>}
             {next && <button onClick={handleNext}>Next</button>}
