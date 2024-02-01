@@ -125,7 +125,7 @@ const PokedexPage = () => {
                           </li>
                         ))}
                         <li className="list-group-item">
-                          <strong>Total:</strong>{' '}
+                          <strong>total:</strong>{' '}
                           {pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}
                         </li>
                       </ul>
