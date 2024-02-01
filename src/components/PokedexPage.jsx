@@ -50,8 +50,7 @@ const PokedexPage = () => {
   };
 
   const handleCardClick = async (id) => {
-    // If the detailed information is not already loaded, fetch it
-    if (!pokeData.find(pokemon => pokemon.id === id).details) {
+    if (!pokeData.find((pokemon) => pokemon.id === id).details) {
       try {
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}/`);
         const details = response.data;
@@ -64,7 +63,6 @@ const PokedexPage = () => {
         console.error('Error fetching Pokemon details:', error);
       }
     } else {
-      // If the detailed information is already loaded, just toggle the click state
       setPokeData((prevData) =>
         prevData.map((pokemon) =>
           pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked } : pokemon
@@ -82,13 +80,18 @@ const PokedexPage = () => {
   }, [url]);
 
   useEffect(() => {
-    // Filter the entire list of Pokemon based on the search term and selected type
-    const filteredPokemon = pokeData.filter((pokemon) =>
-      pokemon.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (!selectedType || pokemon.types.some((type) => type.type.name === selectedType))
+    const filteredPokemon = pokeData.filter(
+      (pokemon) =>
+        pokemon.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (!selectedType || pokemon.types.some((type) => type.type.name === selectedType))
     );
     setFilteredPokeData(filteredPokemon);
   }, [searchTerm, pokeData, selectedType]);
+
+  const typeOptions = [
+    'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flying',
+    'ghost', 'grass', 'ground', 'ice', 'normal', 'poison', 'psychic', 'rock', 'steel', 'water'
+  ];
 
   return (
     <div className="container mt-4">
@@ -107,13 +110,22 @@ const PokedexPage = () => {
               {prev && <button onClick={handlePrev}>Previous</button>}
               {next && <button onClick={handleNext}>Next</button>}
             </div>
-            {/* Type filter buttons */}
+            {/* Type filter dropdown */}
             <div className="mt-4">
-              <button onClick={() => handleTypeFilter(null)}>All</button>
-              <button onClick={() => handleTypeFilter('fire')}>Fire</button>
-              <button onClick={() => handleTypeFilter('water')}>Water</button>
-              <button onClick={() => handleTypeFilter('grass')}>Grass</button>
-              {/* Add more buttons for other types as needed */}
+              <label htmlFor="typeFilterDropdown">Filter by Type:</label>
+              <select
+                id="typeFilterDropdown"
+                className="form-control"
+                value={selectedType || 'All'}
+                onChange={(e) => handleTypeFilter(e.target.value === 'All' ? null : e.target.value)}
+              >
+                <option value="All">All</option>
+                {typeOptions.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
             </div>
             {filteredPokeData.map((pokemon) => (
               <div key={pokemon.id} className="col-md-3 mb-3">
