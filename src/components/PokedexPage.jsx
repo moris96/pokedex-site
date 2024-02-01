@@ -5,7 +5,7 @@ import Search from './Search';
 const PokedexPage = () => {
   const [pokeData, setPokeData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon?limit=none');
+  const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon?limit=20');
   const [next, setNext] = useState();
   const [prev, setPrev] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -99,6 +99,11 @@ const PokedexPage = () => {
       ) : (
         <div>
           <div className="row">
+            {/* next/prev buttons on top */}
+            <div className="mt-4">
+              {prev && <button onClick={handlePrev}>Previous</button>}
+              {next && <button onClick={handleNext}>Next</button>}
+            </div>
             {filteredPokeData.map((pokemon) => (
               <div key={pokemon.id} className="col-md-3 mb-3">
                 <div className="card" onClick={() => handleCardClick(pokemon.id)}>
@@ -149,6 +154,7 @@ const PokedexPage = () => {
               </div>
             ))}
           </div>
+          {/* next/prev buttons at bottom */}
           <div className="mt-4">
             {prev && <button onClick={handlePrev}>Previous</button>}
             {next && <button onClick={handleNext}>Next</button>}
