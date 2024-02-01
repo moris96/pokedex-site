@@ -5,7 +5,7 @@ import Search from './Search';
 const PokedexPage = () => {
   const [pokeData, setPokeData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon?limit=10');
+  const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon?limit=none');
   const [next, setNext] = useState();
   const [prev, setPrev] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +34,7 @@ const PokedexPage = () => {
         })
       );
 
-      setPokeData(pokemonDetails);
+      setPokeData(pokemonDetails.map((pokemon) => ({ ...pokemon, isClicked: false })));
     } catch (error) {
       console.error('Error fetching Pokemon details:', error);
     }
@@ -48,12 +48,20 @@ const PokedexPage = () => {
     setUrl(prev);
   };
 
+  const handleCardClick = (id) => {
+    setPokeData((prevData) =>
+      prevData.map((pokemon) =>
+        pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked } : pokemon
+      )
+    );
+  };
+
   useEffect(() => {
     getPokemon();
   }, [url]);
 
   useEffect(() => {
-    // Filter the Pokemon data based on the search term
+    // Filter the entire list of Pokemon based on the search term
     const filteredPokemon = pokeData.filter((pokemon) =>
       pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -74,27 +82,35 @@ const PokedexPage = () => {
           <div className="row">
             {filteredPokeData.map((pokemon) => (
               <div key={pokemon.id} className="col-md-3 mb-3">
-                <div className="card">
+                <div className="card" onClick={() => handleCardClick(pokemon.id)}>
                   <img
                     src={pokemon.sprites.front_default}
                     alt={pokemon.name}
                     className="card-img-top"
                   />
-                  <div className="card-body">
-                    <h5 className="card-title">{pokemon.name}</h5>
-                    <p className="card-text">
-                      <strong>Height:</strong> {pokemon.height / 10}m<br />
-                      <strong>Weight:</strong> {pokemon.weight / 10}kg
-                    </p>
-                    <h6 className="card-subtitle mb-2 text-muted">Base Stats:</h6>
-                    <ul className="list-group">
-                      {pokemon.stats.map((stat) => (
-                        <li key={stat.stat.name} className="list-group-item">
-                          <strong>{stat.stat.name}:</strong> {stat.base_stat}
+                  {pokemon.isClicked && (
+                    <div className="card-body">
+                      <h5 className="card-title">{pokemon.name}</h5>
+                      <p className="card-text">
+                        <strong>Height:</strong> {pokemon.height / 10}m<br />
+                        <strong>Weight:</strong> {pokemon.weight / 10}kg<br />
+                        <strong>Type:</strong>{' '}
+                        {pokemon.types.map((type) => type.type.name).join(', ')}
+                      </p>
+                      <h6 className="card-subtitle mb-2 text-muted">Base Stats:</h6>
+                      <ul className="list-group">
+                        {pokemon.stats.map((stat) => (
+                          <li key={stat.stat.name} className="list-group-item">
+                            <strong>{stat.stat.name}:</strong> {stat.base_stat}
+                          </li>
+                        ))}
+                        <li className="list-group-item">
+                          <strong>total:</strong>{' '}
+                          {pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}
                         </li>
-                      ))}
-                    </ul>
-                  </div>
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
