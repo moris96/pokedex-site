@@ -50,7 +50,13 @@ const PokedexPage = () => {
   };
 
   const handleCardClick = async (id) => {
-    if (!pokeData.find((pokemon) => pokemon.id === id).details) {
+    if (pokeData.find((pokemon) => pokemon.id === id).details) {
+      setPokeData((prevData) =>
+        prevData.map((pokemon) =>
+          pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked } : pokemon
+        )
+      );
+    } else {
       try {
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}/`);
         const details = response.data;
@@ -62,12 +68,6 @@ const PokedexPage = () => {
       } catch (error) {
         console.error('Error fetching Pokemon details:', error);
       }
-    } else {
-      setPokeData((prevData) =>
-        prevData.map((pokemon) =>
-          pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked } : pokemon
-        )
-      );
     }
   };
 
@@ -87,6 +87,9 @@ const PokedexPage = () => {
     );
     setFilteredPokeData(filteredPokemon);
   }, [searchTerm, pokeData, selectedType]);
+  
+  
+  
 
   const typeOptions = [
     'bug', 'dark', 'dragon', 'electric', 'fairy', 'fighting', 'fire', 'flying',
@@ -98,7 +101,7 @@ const PokedexPage = () => {
       <h1 className="text-center mb-4">Pokedex</h1>
 
       {/* search component */}
-      <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <Search searchTerm={searchTerm} onSearchChange={setSearchTerm} allPokemon={pokeData} />
 
       {loading ? (
         <p>Loading...</p>
