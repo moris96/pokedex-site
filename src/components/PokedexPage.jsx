@@ -13,16 +13,16 @@ const PokedexPage = () => {
   const [selectedType, setSelectedType] = useState(null);
 
   const getPokemon = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
-      const res = await axios.get(url);
-      setNext(res.data.next);
-      setPrev(res.data.previous);
-      await getPokeData(res.data.results);
-      setLoading(false);
+      const res = await axios.get(url)
+      setNext(res.data.next)
+      setPrev(res.data.previous)
+      await getPokeData(res.data.results)
+      setLoading(false)
     } catch (error) {
-      console.error('Error fetching Pokemon list:', error);
-      setLoading(false);
+      console.error('Error fetching Pokemon list:', error)
+      setLoading(false)
     }
   };
 
@@ -30,23 +30,23 @@ const PokedexPage = () => {
     try {
       const pokemonDetails = await Promise.all(
         results.map(async (pokemon) => {
-          const response = await axios.get(pokemon.url);
-          return response.data;
+          const response = await axios.get(pokemon.url)
+          return response.data
         })
       );
 
-      setPokeData(pokemonDetails.map((pokemon) => ({ ...pokemon, isClicked: false })));
+      setPokeData(pokemonDetails.map((pokemon) => ({ ...pokemon, isClicked: false })))
     } catch (error) {
-      console.error('Error fetching Pokemon details:', error);
+      console.error('Error fetching Pokemon details:', error)
     }
   };
 
   const handleNext = () => {
-    setUrl(next);
+    setUrl(next)
   };
 
   const handlePrev = () => {
-    setUrl(prev);
+    setUrl(prev)
   };
 
   const handleCardClick = async (id) => {
@@ -55,28 +55,28 @@ const PokedexPage = () => {
         prevData.map((pokemon) =>
           pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked } : pokemon
         )
-      );
+      )
     } else {
       try {
-        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}/`);
-        const details = response.data;
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}/`)
+        const details = response.data
         setPokeData((prevData) =>
           prevData.map((pokemon) =>
             pokemon.id === id ? { ...pokemon, isClicked: !pokemon.isClicked, details } : pokemon
           )
-        );
+        )
       } catch (error) {
-        console.error('Error fetching Pokemon details:', error);
+        console.error('Error fetching Pokemon details:', error)
       }
     }
   };
 
   const handleTypeFilter = (type) => {
-    setSelectedType(type);
+    setSelectedType(type)
   };
 
   useEffect(() => {
-    getPokemon();
+    getPokemon()
   }, [url]);
 
   useEffect(() => {
@@ -84,8 +84,8 @@ const PokedexPage = () => {
       (pokemon) =>
         pokemon.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
         (!selectedType || pokemon.types.some((type) => type.type.name === selectedType))
-    );
-    setFilteredPokeData(filteredPokemon);
+    )
+    setFilteredPokeData(filteredPokemon)
   }, [searchTerm, pokeData, selectedType]);
   
   
