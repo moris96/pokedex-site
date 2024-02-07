@@ -1,0 +1,37 @@
+@import url('https://fonts.cdnfonts.com/css/pokemon-solid');
+
+* {
+    font-family: 'Pokemon Solid', sans-serif;
+}
+
+.background {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: auto;
+}
+
+.background::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    animation: backgroundAnimation 50s infinite;
+    background-image: url('https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/80ff523f-ff84-457d-a547-464588d3a3d3/debj0k1-d37b9a16-294a-4673-a148-15a8d4b4e86b.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzgwZmY1MjNmLWZmODQtNDU3ZC1hNTQ3LTQ2NDU4OGQzYTNkM1wvZGViajBrMS1kMzdiOWExNi0yOTRhLTQ2NzMtYTE0OC0xNWE4ZDRiNGU4NmIucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.zjEyzCPSHELKL44UPO_YxcEZ4uFWhl6C01LrKv4jmfI');
+    background-size: cover;
+    background-position: center;
+    filter: blur(2px); 
+    z-index: -1;
+}
+
+@keyframes backgroundAnimation {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
